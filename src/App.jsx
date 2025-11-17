@@ -1,48 +1,16 @@
-import { useState, useEffect } from 'react';
-import './App.css';
+// src/App.jsx
+import { AppRoutes } from './routes/appRoutes';
+// (Importe seu Navbar/Footer aqui se eles forem globais)
 
-function App() {
-  const [apiStatus, setApiStatus] = useState('carregando...');
-  
-  // ==========================================================
-  // Usamos EXATAMENTE a mesma URL de API do Render
-  // ==========================================================
-  const API_URL = "https://sorveteria-backend-h7bw.onrender.com"; 
-  // ==========================================================
-  
-  useEffect(() => {
-    // A função é idêntica à do App Cliente
-    const checkApiHealth = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/health`);
-        
-        if (!response.ok) {
-          throw new Error(`API fora do ar ou com erro (Status: ${response.status})`);
-        }
-
-        const data = await response.json();
-        setApiStatus(`✅ ${data.message}`);
-
-      } catch (error) {
-        console.error('Erro ao conectar na API:', error);
-        setApiStatus(`❌ Erro ao conectar na API: ${error.message}`);
-      }
-    };
-
-    checkApiHealth();
-  }, [API_URL]);
-
+export function App() {
   return (
-    <div className="container">
-      {/* Mudamos o título para sabermos que é o Admin */}
-      <h1>Painel Admin (Hello World)</h1>
-      <p>Status da nossa API (Backend):</p>
-      
-      <div className="status-box">
-        {apiStatus}
-      </div>
+    <div>
+      {/* <Navbar /> */}
+      <main>
+        {/* O AppRoutes vai renderizar a página correta aqui */}
+        <AppRoutes />
+      </main>
+      {/* <Footer /> */}
     </div>
   );
 }
-
-export default App;
