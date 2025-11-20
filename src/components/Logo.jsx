@@ -1,4 +1,4 @@
-import logoImage from '../assets/react.svg';
+import logoImage from '../assets/imgAdmin.png';
 
 export function Logo() {
   return (

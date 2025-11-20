@@ -4,7 +4,7 @@ export const login = (email, password) => {
     setTimeout(() => {
       if (email === "teste@email.com" && password === "123") {
         resolve({
-          token: "seu-jwt-token-aqui",
+          token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MThkYTU1ZGIwMWU3OWM0MjdkMTc4ZSIsImlhdCI6MTc2MzM4MjM5OCwiZXhwIjoxNzcxMTU4Mzk4fQ.WQs8QTmT4IJkCehYA7kEMCuJQhCbr3Zjydqm1ODgeP0",
           user: { name: "Usuário Teste", email: "teste@email.com" }
         });
       } else {

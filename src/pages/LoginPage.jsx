@@ -76,7 +76,7 @@ export function LoginPage() {
             </div>
 
             <button className="btn btn-lg btn-primary btn-block w-100 mt-3" type="submit" disabled={!canSubmit}>
-              Login
+              Entrar
             </button>
           </form>
 
