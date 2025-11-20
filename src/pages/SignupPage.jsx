@@ -47,89 +47,98 @@ export function SignupPage() {
   };
 
   return (
-    <div className="account">
-      <div className="form-signin">
-        <Logo />
+    <div className="auth-wrapper">
+      <div className="account">
+        <div className="form-signin">
+          <Logo />
 
-        <form className="signin" onSubmit={handleSignupSubmit}>
-          <div className="form-group">
-            <input
-              type="text"
-              className="form-control"
-              name="userName"
-              required
-              minLength="3"
-              maxLength="60"
-              placeholder="Seu nome"
-              value={formData.userName}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            {/* Se instalar o react-input-mask:
-              <InputMask
-                mask="(99) 9 9999-9999"
-                value={formData.userPhone}
-                onChange={handleChange}
-              >
-                {(inputProps) => <input {...inputProps} type="tel" className="form-control" name="userPhone" required placeholder="(00) 9 0000 0000" />}
-              </InputMask>
-            */}
-            <input
-              type="tel"
-              className="form-control"
-              placeholder="(00) 9 0000 0000"
-              name="userPhone"
-              required
-              value={formData.userPhone}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <div className="input-group">
-              
+          <form className="signin" onSubmit={handleSignupSubmit}>
+            <div className="form-group">
+              <div className="mb-3">
               <input
                 type="text"
                 className="form-control"
-                placeholder="@nomedasualoja"
-                name="storeName"
-                pattern="^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$"
+                name="userName"
                 required
-                value={formData.storeName}
+                minLength="3"
+                maxLength="60"
+                placeholder="Seu nome"
+                value={formData.userName}
                 onChange={handleChange}
               />
             </div>
-          </div>
+            </div>
 
-          <div className="form-group">
-            <input
-              type="email"
-              className="form-control"
-              placeholder="E-mail"
-              name="userEmail"
-              required
-              value={formData.userEmail}
-              onChange={handleChange}
-              pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-            />
-          </div>
+            <div className="form-group">
+              {/* Se instalar o react-input-mask:
+                <InputMask
+                  mask="(99) 9 9999-9999"
+                  value={formData.userPhone}
+                  onChange={handleChange}
+                >
+                  {(inputProps) => <input {...inputProps} type="tel" className="form-control" name="userPhone" required placeholder="(00) 9 0000 0000" />}
+                </InputMask>
+              */}
+              <div className="mb-3">
+              <input
+                type="tel"
+                className="form-control"
+                placeholder="(00) 9 0000 0000"
+                name="userPhone"
+                required
+                value={formData.userPhone}
+                onChange={handleChange}
+              />
+            </div>
+            </div>
 
-          <div className="invalid-msg text-center">
-            <span> {msgError} </span>
-          </div>
+            <div className="form-group">
+              <div className="input-group">
+                <div className="mb-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="@nomedasualoja"
+                  name="storeName"
+                  pattern="^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$"
+                  required
+                  value={formData.storeName}
+                  onChange={handleChange}
+                />
+                </div>
+              </div>
+            </div>
 
-          <button className="btn btn-lg btn-primary btn-block" type="submit" disabled={!canSubmit}>
-            Criar
-          </button>
-        </form>
+            <div className="form-group">
+              <div className="mb-3">
+              <input
+                type="email"
+                className="form-control"
+                placeholder="E-mail"
+                name="userEmail"
+                required
+                value={formData.userEmail}
+                onChange={handleChange}
+                pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+              />
+              </div>
+            </div>
 
-        <div className="singup d-flex justify-content-center">
-          <div className="signup">
-            <Link to="/login" className="text-primary">
-              Já tem conta? Login
-            </Link>
+            <div className="invalid-msg text-center">
+              <span> {msgError} </span>
+            </div>
+
+            <button className="btn btn-lg btn-primary w-100 mt-2" type="submit" disabled={!canSubmit}>
+              Criar
+            </button>
+          </form>
+
+          <div className="singup d-flex justify-content-center">
+            <div className="signup">
+              <Link to="/login" className="text-primary">
+                Já tem conta? Login
+              </Link>
+            </div>
           </div>
         </div>
       </div>

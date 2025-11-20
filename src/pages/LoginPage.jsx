@@ -1,12 +1,9 @@
-// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
-import { Link,  useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
-import {login} from '../services/authAPI'
-
 
 export function LoginPage() {
-  useNavigate();
+  const navigate = useNavigate();
   const [msgError, setMsgError] = useState('');
   const [canSubmit, setCanSubmit] = useState(true);
 
@@ -26,13 +23,13 @@ export function LoginPage() {
     setCanSubmit(false);
 
     try {
-      // 1. Chame sua API de login aqui
-      await login(formData.userEmail, formData.userPwd);
       console.log('Dados do Login:', formData);
-    
-
-      // Apenas para simulação, vamos dar um erro
-      throw new Error("Email ou senha inválidos (simulação)");
+      
+      // Simulação de Login bem-sucedido
+      // Numa app real, aqui viria a chamada à API de autenticação
+      
+      // Redireciona para o Dashboard de Pedidos
+      navigate('/admin/orders'); 
 
     } catch (err) {
       setMsgError(err.message);
@@ -41,50 +38,57 @@ export function LoginPage() {
   };
 
   return (
-    <div className="account">
-      <div className="form-signin">
-        <Logo />
-        
-        <form className="signin" onSubmit={handleLoginSubmit}>
-          <input
-            type="email"
-            className="form-control"
-            placeholder="E-mail"
-            name="userEmail"
-            required
-            autoFocus
-            value={formData.userEmail}
-            onChange={handleChange}
-            pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-          />
+    // 👇 ADICIONEI A CLASSE 'auth-wrapper' AQUI
+    <div className="auth-wrapper">
+      <div className="account">
+        <div className="form-signin">
+          <Logo />
+          
+          <form className="signin" onSubmit={handleLoginSubmit}>
+            <div className="mb-3">
+            <input
+              type="email"
+              className="form-control form-control-lg"
+              placeholder="E-mail"
+              name="userEmail"
+              required
+              autoFocus
+              value={formData.userEmail}
+              onChange={handleChange}
+              pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+            />
+            </div>
 
-          <input
-            type="password"
-            className="form-control"
-            placeholder="Senha"
-            name="userPwd"
-            required
-            value={formData.userPwd}
-            onChange={handleChange}
-          />
+            <div className="mb-3">
+            <input
+              type="password"
+              className="form-control form-control-lg"
+              placeholder="Senha"
+              name="userPwd"
+              required
+              value={formData.userPwd}
+              onChange={handleChange}
+            />
+            </div>
 
-          <div className="invalid-msg text-center">
-            <span> {msgError} </span>
-          </div>
+            <div className="invalid-msg text-center">
+              <span> {msgError} </span>
+            </div>
 
-          <button className="btn btn-lg btn-primary btn-block" type="submit" disabled={!canSubmit}>
-            Login
-          </button>
-        </form>
+            <button className="btn btn-lg btn-primary btn-block w-100 mt-3" type="submit" disabled={!canSubmit}>
+              Login
+            </button>
+          </form>
 
-        <div className="singup d-flex justify-content-center">
-          <div className="signup">
-            <span>
-              Novo por aqui?{' '}
-              <Link to="/signup" className="text-primary">
-                Crie sua lista
-              </Link>
-            </span>
+          <div className="singup d-flex justify-content-center mt-3">
+            <div className="signup">
+              <span>
+                Novo por aqui?{' '}
+                <Link to="/signup" className="text-primary text-decoration-none">
+                  Crie sua conta
+                </Link>
+              </span>
+            </div>
           </div>
         </div>
       </div>

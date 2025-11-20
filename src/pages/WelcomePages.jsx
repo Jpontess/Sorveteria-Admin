@@ -10,23 +10,25 @@ export function WelcomePage() {
   const storeName = location.state?.storeName || 'sua-loja';
 
   return (
-    <div className="account">
-      <div className="form-signin" style={{ textAlign: 'center' }}>
-        <Logo />
-        <h1>Quase lá!!!</h1>
-        <p>
-          Entraremos em contato para criar a sua lista online.
-        </p>
-        <p>
-          Você poderá acessar sua lista pelo link{' '}
-          <a href={`http://${storeName}.seu-dominio.com`} target="_blank" rel="noopener noreferrer">
-            {storeName}.seu-dominio.com
-          </a>
-        </p>
-        <br />
-        <Link to="/login" className="text-primary">
-          Voltar ao Login
-        </Link>
+    <div className="auth-wrapper">
+      <div className="account">
+        <div className="form-signin" style={{ textAlign: 'center' }}>
+          <Logo />
+          <h1>Quase lá!!!</h1>
+          <p>
+            Entraremos em contato para criar a sua lista online.
+          </p>
+          <p>
+            Você poderá acessar sua lista pelo link{' '}
+            <a href={`http://${storeName}.seu-dominio.com`} target="_blank" rel="noopener noreferrer">
+              {storeName}.seu-dominio.com
+            </a>
+          </p>
+          <br />
+          <Link to="/login" className="text-primary">
+            Voltar ao Login
+          </Link>
+        </div>
       </div>
     </div>
   );

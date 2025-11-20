@@ -1,44 +1,66 @@
 // src/components/ProductFormModal.jsx
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 
 // Estado inicial do formulário em branco
 const defaultFormState = {
   name: '',
   description: '',
   price: 0,
-  isAvailable: true, // Por padrão, novos produtos estão disponíveis
+  image: '', // Pode ser URL ou Base64 (Upload)
+  isAvailable: true,
 };
 
 export function ProductFormModal({ isOpen, onClose, onSave, product }) {
-  const [formData, setFormData] = useState(defaultFormState);
-
-  // Determina o modo (Criar ou Editar)
+  
   const isEditing = product != null;
   const title = isEditing ? "Editar Produto" : "Adicionar Novo Produto";
 
-  // Efeito para popular o formulário quando o 'product' (para edição) mudar
+  const [formData, setFormData] = useState(
+    isEditing ? { ...defaultFormState, ...product } : defaultFormState
+  );
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    
+    let finalValue;
+    if (type === 'checkbox') {
+      finalValue = checked;
+    } else if (type === 'number') {
+      finalValue = parseFloat(value);
+    } else {
+      finalValue = value;
+    }
+
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : (type === 'number' ? parseFloat(value) : value)
+      [name]: finalValue
     }));
+  };
+
+  // Função de Upload (Base64) - Mantida como alternativa
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("A imagem é muito grande! Tente uma menor que 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, image: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Passa os dados do formulário para o 'onSave' da página pai
     onSave(formData);
   };
 
-  // Renderiza null se o modal não estiver aberto (melhor para performance)
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   return (
-    // Backdrop do Modal
     <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
@@ -49,6 +71,18 @@ export function ProductFormModal({ isOpen, onClose, onSave, product }) {
             </div>
             
             <div className="modal-body">
+              {/* Preview da Imagem */}
+              {formData.image && (
+                <div className="mb-3 text-center position-relative">
+                  <img 
+                    src={formData.image} 
+                    alt="Preview" 
+                    className="img-thumbnail" 
+                    style={{ maxHeight: '150px' }} 
+                  />
+                </div>
+              )}
+
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">Nome do Produto</label>
                 <input
@@ -61,6 +95,32 @@ export function ProductFormModal({ isOpen, onClose, onSave, product }) {
                   required
                 />
               </div>
+              
+              <div className="mb-3">
+                <label className="form-label">Imagem do Produto</label>
+                
+                {/* Campo para Link */}
+                <input
+                  type="url"
+                  className="form-control mb-2"
+                  id="image"
+                  name="image"
+                  placeholder="Cole o link da imagem (http://...)"
+                  value={formData.image || ''}
+                  onChange={handleChange}
+                />
+                
+                <div className="text-center text-muted small mb-2">- OU -</div>
+
+                {/* Campo para Upload (Base64) */}
+                <input 
+                  type="file" 
+                  className="form-control" 
+                  accept="image/*"
+                  onChange={handleFileChange} 
+                />
+              </div>
+
               <div className="mb-3">
                 <label htmlFor="description" className="form-label">Descrição</label>
                 <textarea
