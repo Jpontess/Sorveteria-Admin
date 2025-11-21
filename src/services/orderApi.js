@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080/api/order';
+const API_URL = 'https://sorveteria-backend-h7bw.onrender.com/api/order';
 
 export const getOrders = async () => {
   try {
