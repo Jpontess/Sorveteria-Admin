@@ -1,11 +1,10 @@
-// src/pages/SignupPage.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
-import { signup } from '../services/authAPI';
 
-// Para a máscara, você precisará de: npm install react-input-mask
-// import InputMask from 'react-input-mask';
+// 👇 CORREÇÃO AQUI: Mudamos de 'signup' para 'register'
+// O arquivo authApi.js exporta "register", então temos de importar "register".
+import { register } from '../services/authAPI'; 
 
 export function SignupPage() {
   const navigate = useNavigate();
@@ -13,10 +12,8 @@ export function SignupPage() {
   const [canSubmit, setCanSubmit] = useState(true);
 
   const [formData, setFormData] = useState({
-    userName: '',
-    userPhone: '',
-    storeName: '',
     userEmail: '',
+    userPwd: '',
   });
 
   const handleChange = (e) => {
@@ -30,18 +27,15 @@ export function SignupPage() {
     setCanSubmit(false);
 
     try {
-      // 1. Chame sua API de cadastro
-      await signup(formData);
-      console.log('Dados do Cadastro:', formData);
+      // 2. Chamar a função 'register' (que antes estava a dar erro como 'signup')
+      await register(formData.userEmail, formData.userPwd);
 
-      // 2. Se for sucesso, navegue para o Welcome
-      // Passando o nome da loja via 'state' do roteador
-      navigate('/welcome', { 
-        state: { storeName: formData.storeName } 
-      });
+      // 3. Sucesso!
+      alert('Conta criada com sucesso! Faça login.');
+      navigate('/login');
 
-    } catch (error) {
-      setMsgError('Erro ao criar conta. Tente novamente: ', error.message);
+    } catch (err) {
+      setMsgError(err.message);
       setCanSubmit(true);
     }
   };
@@ -52,91 +46,48 @@ export function SignupPage() {
         <div className="form-signin">
           <Logo />
 
+          <h4 className="text-center mb-4 text-muted">Novo Administrador</h4>
+
           <form className="signin" onSubmit={handleSignupSubmit}>
-            <div className="form-group">
-              <div className="mb-3">
-              <input
-                type="text"
-                className="form-control"
-                name="userName"
-                required
-                minLength="3"
-                maxLength="60"
-                placeholder="Seu nome"
-                value={formData.userName}
-                onChange={handleChange}
-              />
-            </div>
-            </div>
-
-            <div className="form-group">
-              {/* Se instalar o react-input-mask:
-                <InputMask
-                  mask="(99) 9 9999-9999"
-                  value={formData.userPhone}
-                  onChange={handleChange}
-                >
-                  {(inputProps) => <input {...inputProps} type="tel" className="form-control" name="userPhone" required placeholder="(00) 9 0000 0000" />}
-                </InputMask>
-              */}
-              <div className="mb-3">
-              <input
-                type="tel"
-                className="form-control"
-                placeholder="(00) 9 0000 0000"
-                name="userPhone"
-                required
-                value={formData.userPhone}
-                onChange={handleChange}
-              />
-            </div>
-            </div>
-
-            <div className="form-group">
-              <div className="input-group">
-                <div className="mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="@nomedasualoja"
-                  name="storeName"
-                  pattern="^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$"
-                  required
-                  value={formData.storeName}
-                  onChange={handleChange}
-                />
-                </div>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="mb-3">
+            
+            <div className="mb-3">
               <input
                 type="email"
-                className="form-control"
+                className="form-control form-control-lg"
                 placeholder="E-mail"
                 name="userEmail"
                 required
                 value={formData.userEmail}
                 onChange={handleChange}
-                pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
               />
-              </div>
             </div>
 
-            <div className="invalid-msg text-center">
+            <div className="mb-3">
+              <input
+                type="password"
+                className="form-control form-control-lg"
+                placeholder="Senha"
+                name="userPwd"
+                required
+                minLength="6"
+                value={formData.userPwd}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="invalid-msg text-center mb-2">
               <span> {msgError} </span>
             </div>
 
-            <button className="btn btn-lg btn-primary w-100 mt-2" type="submit" disabled={!canSubmit}>
-              Criar
+            <button className="btn btn-lg btn-primary w-100 mt-4" type="submit" disabled={!canSubmit}>
+              Criar Conta
             </button>
           </form>
 
-          <div className="singup d-flex justify-content-center">
+          <div className="singup d-flex justify-content-center mt-4">
             <div className="signup">
-              <Link to="/login" className="text-primary">
-                Já tem conta? Login
+              <Link to="/login" className="text-primary text-decoration-none fw-bold">
+                Já tem conta? Fazer Login
               </Link>
             </div>
           </div>

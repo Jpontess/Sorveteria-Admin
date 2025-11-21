@@ -1,32 +1,59 @@
-export const login = (email, password) => {
-  return new Promise((resolve, reject) => {
-    console.log("Enviando login para API:", { email, password });
-    setTimeout(() => {
-      if (email === "teste@email.com" && password === "123") {
-        resolve({
-          token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MThkYTU1ZGIwMWU3OWM0MjdkMTc4ZSIsImlhdCI6MTc2MzM4MjM5OCwiZXhwIjoxNzcxMTU4Mzk4fQ.WQs8QTmT4IJkCehYA7kEMCuJQhCbr3Zjydqm1ODgeP0",
-          user: { name: "Usuário Teste", email: "teste@email.com" }
-        });
-      } else {
-        reject(new Error("E-mail ou senha inválidos"));
-      }
-    }, 1000); // Simula 1 segundo de espera da rede
-  });
+const API_URL = 'https://sorveteria-backend-h7bw.onrender.com/api/auth'; 
+
+export const login = async (email, password) => {
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    // O seu backend retorna { status: 'Sucesso', token: '...' } ou { status: 'Falha', message: '...' }
+    if (!response.ok || data.status === 'Falha' || data.status === 'falha') {
+      throw new Error(data.message || 'Erro ao fazer login');
+    }
+
+    // Salvar o token no navegador para usar depois
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Erro no Login:", error.message);
+    throw error;
+  }
 };
 
-export const signup = (formData) => {
-  return new Promise((resolve, reject) => {
-    console.log("Enviando cadastro para API:", formData);
-    setTimeout(() => {
-      if (formData.storeName === "loja-existente") {
-        reject(new Error("Esse nome de loja já existe"));
-      } else {
-        // A API normalmente retornaria os dados do usuário/loja criada
-        resolve({
-          id: "12345",
-          ...formData
-        });
-      }
-    }, 1500);
-  });
+export const register = async (email, password) => {
+  try {
+    const response = await fetch(`${API_URL}/register`, { 
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.status === 'fail' || data.status === 'falha') {
+      throw new Error(data.message || 'Erro ao registrar');
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Erro no Registro:", error);
+    throw error;
+  }
+};
+
+// Função utilitária para fazer logout
+export const logout = () => {
+  localStorage.removeItem('token');
+  window.location.href = '/login';
 };
