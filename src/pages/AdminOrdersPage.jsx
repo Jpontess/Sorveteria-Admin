@@ -37,8 +37,7 @@ export function AdminOrdersPage() {
         audioRef.current.currentTime = 0; 
         audioRef.current.play().catch(() => {});
       } catch (e) {
-        console.log(e.message);
-        
+        console.log('Error: ', e.message)
       }
       setOrders(prevOrders => [newOrder, ...prevOrders]);
     }
@@ -63,7 +62,7 @@ export function AdminOrdersPage() {
   }, []);
 
   const testarSom = () => {
-    audioRef.current.play().catch(e => alert("Erro ao tocar som.", e.message));
+    audioRef.current.play().catch(e => alert("Erro ao tocar som. ",e.message));
   };
 
   const handleStatusChange = async (orderId, newStatus) => {
@@ -82,11 +81,29 @@ export function AdminOrdersPage() {
     const phone = order.customerPhone.replace(/\D/g, '');
     const orderIdShort = order._id.slice(-6).toUpperCase();
     const targetPhone = phone.length <= 11 ? `55${phone}` : phone;
-    const message = `Olá *${order.customerName}*, atualização do pedido *#${orderIdShort}*: ${order.status}`;
-    window.open(`https://wa.me/${targetPhone}?text=${encodeURIComponent(message)}`, '_blank');
+    
+    let messageBody = "";
+    switch (order.status) {
+      case 'Em Preparo':
+        messageBody = `✅ *Pedido Aceito!* \nO seu pedido *#${orderIdShort}* já está sendo preparado. 👨‍🍳`;
+        break;
+      case 'Pronto para Entrega':
+        messageBody = `🛵 *Saiu para Entrega!* \nO pedido *#${orderIdShort}* já está a caminho.`;
+        break;
+      case 'Concluído':
+        messageBody = `🎉 *Pedido Entregue!* \nObrigado pela preferência!`;
+        break;
+      case 'Cancelado':
+        messageBody = `❌ *Pedido Cancelado* \nHouve um problema com o pedido *#${orderIdShort}*.`;
+        break;
+      default:
+        messageBody = `Olá! Atualização sobre o pedido *#${orderIdShort}*: ${order.status}`;
+    }
+
+    const fullMessage = `Olá *${order.customerName}*, aqui é da Sorvesan!\n\n${messageBody}`;
+    window.open(`https://wa.me/${targetPhone}?text=${encodeURIComponent(fullMessage)}`, '_blank');
   };
 
-  // Função para formatar o endereço (evita erro de objeto)
   const formatAddress = (addressData) => {
     if (!addressData) return 'Endereço não informado';
     if (typeof addressData === 'string') return addressData;
@@ -119,7 +136,6 @@ export function AdminOrdersPage() {
   return (
     <div className="container mt-4 mb-5">
       
-      {/* --- CABEÇALHO RESTAURADO (Aqui usamos isConnected e testarSom) --- */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-4 bg-white rounded shadow-sm">
         <div>
           <h2 className="fw-bold text-dark mb-1">
@@ -184,16 +200,45 @@ export function AdminOrdersPage() {
               
               <div className="card-footer bg-white py-3">
                  <div className="d-grid gap-2">
-                    <button className="btn btn-outline-success btn-sm" onClick={() => sendWhatsAppMessage(order)}>
-                        <i className="bi bi-whatsapp me-1"></i> Avisar
-                    </button>
                     
+                    {/* 1. BOTÃO WHATSAPP (Sempre visível) */}
+                    <button className="btn btn-outline-success btn-sm" onClick={() => sendWhatsAppMessage(order)}>
+                        <i className="bi bi-whatsapp me-1"></i> Avisar Cliente
+                    </button>
+
+                    {/* 2. BOTÕES DE AÇÃO RÁPIDA (Baseado no Status) */}
+                    {order.status === 'Pendente' && (
+                        <div className="d-flex gap-2">
+                            <button className="btn btn-success flex-grow-1 fw-bold" onClick={() => handleStatusChange(order._id, 'Em Preparo')}>
+                                <i className="bi bi-check-lg me-1"></i> Aceitar
+                            </button>
+                            <button className="btn btn-outline-danger" onClick={() => {
+                                if(window.confirm("Cancelar este pedido?")) handleStatusChange(order._id, 'Cancelado')
+                            }}>
+                                <i className="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                    )}
+
+                    {order.status === 'Em Preparo' && (
+                        <button className="btn btn-primary fw-bold" onClick={() => handleStatusChange(order._id, 'Pronto para Entrega')}>
+                            <i className="bi bi-bicycle me-1"></i> Enviar para Entrega
+                        </button>
+                    )}
+
+                    {order.status === 'Pronto para Entrega' && (
+                        <button className="btn btn-secondary" onClick={() => handleStatusChange(order._id, 'Concluído')}>
+                            <i className="bi bi-check2-all me-1"></i> Finalizar
+                        </button>
+                    )}
+                    
+                    {/* 3. SELETOR MANUAL (Backup) */}
                     <select 
-                        className="form-select form-select-sm"
+                        className="form-select form-select-sm mt-1"
                         value="" 
                         onChange={(e) => handleStatusChange(order._id, e.target.value)}
                       >
-                        <option value="" disabled>Mudar status...</option>
+                        <option value="" disabled>Mudar status manualmente...</option>
                         <option value="Pendente">Pendente</option>
                         <option value="Em Preparo">Em Preparo</option>
                         <option value="Pronto para Entrega">Pronto para Entrega</option>
