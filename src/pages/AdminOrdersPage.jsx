@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { socket } from '../services/socketioApi';
 import { getOrders, updateOrderStatus } from '../services/orderApi';
 
-const AUDIO_URL = 'https://media.geeksforgeeks.org/wp-content/uploads/20190531135120/beep.mp3';
+const AUDIO_URL = 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3';
 
 export function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
+  // 1. NOVO ESTADO PARA O FILTRO
+  const [filterStatus, setFilterStatus] = useState('Todos'); 
+  
   const [isConnected, setIsConnected] = useState(socket.connected);
   const audioRef = useRef(new Audio(AUDIO_URL));
 
@@ -37,7 +40,7 @@ export function AdminOrdersPage() {
         audioRef.current.currentTime = 0; 
         audioRef.current.play().catch(() => {});
       } catch (e) {
-        console.log('Error: ', e.message)
+        console.log(e.message)
       }
       setOrders(prevOrders => [newOrder, ...prevOrders]);
     }
@@ -62,7 +65,7 @@ export function AdminOrdersPage() {
   }, []);
 
   const testarSom = () => {
-    audioRef.current.play().catch(e => alert("Erro ao tocar som. ",e.message));
+    audioRef.current.play().catch(e => alert("Erro ao tocar som.", e.message));
   };
 
   const handleStatusChange = async (orderId, newStatus) => {
@@ -133,32 +136,61 @@ export function AdminOrdersPage() {
     return 'border-0';
   };
 
+  // 2. LÓGICA DE FILTRAGEM
+  // Se o filtro for 'Todos', retorna tudo. Senão, retorna só o status selecionado.
+  const filteredOrders = orders.filter(order => {
+    if (filterStatus === 'Todos') return true;
+    return order.status === filterStatus;
+  });
+
   return (
     <div className="container mt-4 mb-5">
       
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-4 bg-white rounded shadow-sm">
-        <div>
+        <div className="mb-3 mb-md-0">
           <h2 className="fw-bold text-dark mb-1">
             <i className="bi bi-speedometer2 me-2 text-primary"></i>
             Monitor de Pedidos
           </h2>
-          <p className="text-muted mb-0">Gerencie os pedidos em tempo real.</p>
+          <p className="text-muted mb-0">
+             Mostrando <strong>{filteredOrders.length}</strong> pedidos
+             {filterStatus !== 'Todos' && <span> (Filtro: {filterStatus})</span>}
+          </p>
         </div>
         
-        <div className="d-flex gap-2 align-items-center mt-3 mt-md-0">
-          <button className="btn btn-light border" onClick={testarSom}>
-            <i className="bi bi-volume-up-fill me-1"></i> Som
+        <div className="d-flex gap-2 align-items-center flex-wrap">
+          
+          {/* 3. UI DO FILTRO */}
+          <div className="input-group" style={{ maxWidth: '250px' }}>
+            <span className="input-group-text bg-light"><i className="bi bi-funnel"></i></span>
+            <select 
+                className="form-select fw-bold" 
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+            >
+                <option value="Todos">Todos os Pedidos</option>
+                <option value="Pendente">⏳ Pendentes</option>
+                <option value="Em Preparo">🔥 Em Preparo</option>
+                <option value="Pronto para Entrega">🚲 Pronto p/ Entrega</option>
+                <option value="Concluído">✅ Concluídos</option>
+                <option value="Cancelado">❌ Cancelados</option>
+            </select>
+          </div>
+
+          <button className="btn btn-light border" onClick={testarSom} title="Testar Som">
+            <i className="bi bi-volume-up-fill"></i>
           </button>
           
           <div className={`d-flex align-items-center px-3 py-2 rounded ${isConnected ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}`}>
             <i className={`bi bi-circle-fill me-2 small ${isConnected ? 'blink' : ''}`}></i>
-            <span className="fw-bold">{isConnected ? 'Ao Vivo' : 'Offline'}</span>
+            <span className="fw-bold d-none d-sm-inline">{isConnected ? 'Ao Vivo' : 'Offline'}</span>
           </div>
         </div>
       </div>
 
       <div className="row g-4">
-        {orders.map(order => (
+        {/* 4. USAMOS A LISTA FILTRADA AQUI */}
+        {filteredOrders.map(order => (
           <div key={order._id} className="col-12 col-lg-6 col-xl-4">
             <div className={`card shadow-sm h-100 ${getBorderClass(order.status)}`}>
               
@@ -200,13 +232,10 @@ export function AdminOrdersPage() {
               
               <div className="card-footer bg-white py-3">
                  <div className="d-grid gap-2">
-                    
-                    {/* 1. BOTÃO WHATSAPP (Sempre visível) */}
                     <button className="btn btn-outline-success btn-sm" onClick={() => sendWhatsAppMessage(order)}>
                         <i className="bi bi-whatsapp me-1"></i> Avisar Cliente
                     </button>
 
-                    {/* 2. BOTÕES DE AÇÃO RÁPIDA (Baseado no Status) */}
                     {order.status === 'Pendente' && (
                         <div className="d-flex gap-2">
                             <button className="btn btn-success flex-grow-1 fw-bold" onClick={() => handleStatusChange(order._id, 'Em Preparo')}>
@@ -232,7 +261,6 @@ export function AdminOrdersPage() {
                         </button>
                     )}
                     
-                    {/* 3. SELETOR MANUAL (Backup) */}
                     <select 
                         className="form-select form-select-sm mt-1"
                         value="" 
@@ -251,6 +279,13 @@ export function AdminOrdersPage() {
             </div>
           </div>
         ))}
+
+        {filteredOrders.length === 0 && (
+          <div className="col-12 text-center mt-5 text-muted">
+            <i className="bi bi-filter fs-1"></i>
+            <h4 className="mt-3">Nenhum pedido encontrado neste filtro</h4>
+          </div>
+        )}
       </div>
     </div>
   );
