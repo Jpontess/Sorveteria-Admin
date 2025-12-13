@@ -45,7 +45,6 @@ export function AdminDashboardPage() {
   const totalOrders = filteredOrders.length;
   const averageTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-  // Removido 'ordersByStatus' pois não estava sendo usado, resolvendo o aviso do linter.
 
   // Exibir Loading enquanto carrega
   if (isLoading) {

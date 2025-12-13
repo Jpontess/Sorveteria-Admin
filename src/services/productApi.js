@@ -19,7 +19,7 @@ export const getProducts = async () => {
     if (responseData && responseData.data && Array.isArray(responseData.data.produtos)) {
       return responseData.data.produtos;
     } 
-    // Adicionando fallback para outras estruturas que encontramos
+    // Adicionando fallback para outras estruturas que encontramosk
     else if (Array.isArray(responseData)) {
       return responseData;
     } else if (responseData && Array.isArray(responseData.products)) {

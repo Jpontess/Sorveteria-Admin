@@ -132,6 +132,18 @@ export function ProductFormModal({ isOpen, onClose, onSave, product }) {
                   onChange={handleChange}
                 ></textarea>
               </div>
+              <div className='mb-3'>
+                <label htmlFor='category' className='form-label'>Categoria</label>
+                  <input 
+                    type="text"
+                    className='form-control'
+                    id='category'
+                    name='category'
+                    value={formData.category}
+                    onChange={handleChange}
+                  />
+              </div>
+
               <div className="mb-3">
                 <label htmlFor="price" className="form-label">Preço (R$)</label>
                 <input
