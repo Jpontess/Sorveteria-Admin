@@ -1,52 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { getOrders } from '../services/orderApi';
+import { getMonthlyReport, formatMonthKey } from '../services/relatorioAPI';
 
 export function AdminDashboardPage() {
-  const [allOrders, setAllOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
+  // Estado de carregamento
   const [isLoading, setIsLoading] = useState(true);
   
-  // Estado para o filtro de mês (Padrão: Mês atual no formato YYYY-MM)
+  // Input de mês (Padrão: Mês atual no formato YYYY-MM)
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
 
-  // Carregar pedidos ao entrar na tela
+  // Estado dos dados do dashboard
+  const [dashboardData, setDashboardData] = useState({
+    orders: [],
+    stats: { totalRevenue: 0, count: 0, ticketMedio: 0 }
+  });
+
+  // Busca os dados sempre que o mês muda
   useEffect(() => {
     const loadData = async () => {
+      setIsLoading(true);
       try {
-        const data = await getOrders();
-        const orders = Array.isArray(data) ? data : [];
-        setAllOrders(orders);
+        const data = await getMonthlyReport(selectedMonth);
+        setDashboardData(data);
       } catch (error) {
-        console.error("Erro ao carregar dados:", error);
+        console.error("Erro no dashboard:", error);
       } finally {
         setIsLoading(false);
       }
     };
+
     loadData();
-  }, []);
+  }, [selectedMonth]);
 
-  // Recalcular sempre que o mês ou a lista de pedidos mudar
-  useEffect(() => {
-    if (allOrders.length === 0) return;
+  // Função para formatar dinheiro (R$)
+  const formatMoney = (value) => {
+    return Number(value).toFixed(2).replace('.', ',');
+  };
 
-    const filtered = allOrders.filter(order => {
-      // Pega os primeiros 7 caracteres da data (ex: "2025-11") e compara
-      const orderDate = order.createdAt ? order.createdAt.slice(0, 7) : '';
-      // Ignora pedidos cancelados na contabilidade
-      const isNotCancelled = order.status !== 'Cancelado'; 
-      return orderDate === selectedMonth && isNotCancelled;
-    });
+  const { stats, orders } = dashboardData;
 
-    setFilteredOrders(filtered);
-  }, [selectedMonth, allOrders]);
-
-  // --- CÁLCULOS MATEMÁTICOS ---
-  const totalRevenue = filteredOrders.reduce((acc, order) => acc + (order.totalAmount || 0), 0);
-  const totalOrders = filteredOrders.length;
-  const averageTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-
-
-  // Exibir Loading enquanto carrega
+  // --- Renderização de Loading ---
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
@@ -67,7 +59,9 @@ export function AdminDashboardPage() {
             <i className="bi bi-graph-up-arrow me-2 text-primary"></i>
             Dashboard Financeiro
           </h2>
-          <p className="text-muted mb-0">Visão geral de vendas e performance.</p>
+          <p className="text-muted mb-0">
+            Relatório de {formatMonthKey(selectedMonth).replace('-', ' de ')}
+          </p>
         </div>
         
         <div className="mt-3 mt-md-0">
@@ -87,11 +81,11 @@ export function AdminDashboardPage() {
         <div className="col-md-4">
           <div className="card border-0 shadow-sm h-100 border-start border-success border-5">
             <div className="card-body">
-              <h6 className="text-muted text-uppercase small fw-bold">Faturamento (Mês)</h6>
+              <h6 className="text-muted text-uppercase small fw-bold">Faturamento</h6>
               <h2 className="text-success fw-bold mb-0">
-                R$ {totalRevenue.toFixed(2).replace('.', ',')}
+                R$ {formatMoney(stats.totalRevenue)}
               </h2>
-              <small className="text-muted">Vendas líquidas (sem cancelados)</small>
+              <small className="text-muted">Total consolidado do mês</small>
             </div>
           </div>
         </div>
@@ -102,9 +96,9 @@ export function AdminDashboardPage() {
             <div className="card-body">
               <h6 className="text-muted text-uppercase small fw-bold">Pedidos Realizados</h6>
               <h2 className="text-primary fw-bold mb-0">
-                {totalOrders}
+                {stats.count}
               </h2>
-              <small className="text-muted">Total de entregas no período</small>
+              <small className="text-muted">Entregas no período</small>
             </div>
           </div>
         </div>
@@ -115,9 +109,9 @@ export function AdminDashboardPage() {
             <div className="card-body">
               <h6 className="text-muted text-uppercase small fw-bold">Ticket Médio</h6>
               <h2 className="text-dark fw-bold mb-0">
-                R$ {averageTicket.toFixed(2).replace('.', ',')}
+                R$ {formatMoney(stats.ticketMedio)}
               </h2>
-              <small className="text-muted">Valor médio por cliente</small>
+              <small className="text-muted">Valor médio por pedido</small>
             </div>
           </div>
         </div>
@@ -126,14 +120,14 @@ export function AdminDashboardPage() {
       {/* --- TABELA DETALHADA --- */}
       <div className="card border-0 shadow-sm">
         <div className="card-header bg-white py-3">
-          <h5 className="mb-0 fw-bold">Extrato de Vendas - {selectedMonth}</h5>
+          <h5 className="mb-0 fw-bold">Extrato de Vendas</h5>
         </div>
         <div className="card-body p-0">
           <div className="table-responsive">
             <table className="table table-hover mb-0 align-middle">
               <thead className="table-light">
                 <tr>
-                  <th>Data</th>
+                  <th>Data/Hora</th>
                   <th>Cliente</th>
                   <th>Pagamento</th>
                   <th>Status</th>
@@ -141,8 +135,8 @@ export function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredOrders.length > 0 ? (
-                  filteredOrders.map(order => (
+                {orders.length > 0 ? (
+                  orders.map(order => (
                     <tr key={order._id}>
                       <td>
                         {new Date(order.createdAt).toLocaleDateString()} 
@@ -158,7 +152,7 @@ export function AdminDashboardPage() {
                         </span>
                       </td>
                       <td className="text-end fw-bold text-success">
-                        R$ {order.totalAmount.toFixed(2).replace('.', ',')}
+                        R$ {formatMoney(order.totalAmount || 0)}
                       </td>
                     </tr>
                   ))
@@ -166,7 +160,7 @@ export function AdminDashboardPage() {
                   <tr>
                     <td colSpan="5" className="text-center py-5 text-muted">
                       <i className="bi bi-calendar-x fs-1 d-block mb-2"></i>
-                      Nenhuma venda encontrada neste mês.
+                      Nenhum registro encontrado para este mês.
                     </td>
                   </tr>
                 )}

@@ -1,131 +1,297 @@
 /* src/styles/global.css */
 
-/* --- Variáveis de Cores (Tema Admin) --- */
+/* =========================================
+   1. VARIÁVEIS & TEMA (PALETA PREMIUM)
+   ========================================= */
 :root {
-  --primary-color: #0d6efd;
-  --success-color: #198754;
-  --danger-color: #dc3545;
-  --dark-bg: #343a40;       /* Cor da Navbar */
-  --body-bg: #f4f6f9;       /* Fundo cinza claro (tipo Dashboard) */
+  /* Cores Principais - Mais profundas e modernas que o padrão */
+  --primary-color: #4361ee;       /* Azul vibrante (tipo Stripe/Intercom) */
+  --primary-hover: #3a56d4;
+  --secondary-color: #e9ecef;
+  
+  /* Status Colors (Cores Semânticas) */
+  --success-color: #10b981;       /* Verde Esmeralda */
+  --success-bg: #d1fae5;
+  --warning-color: #f59e0b;       /* Âmbar */
+  --warning-bg: #fef3c7;
+  --danger-color: #ef4444;        /* Vermelho vibrante */
+  --danger-bg: #fee2e2;
+  --info-color: #3b82f6;
+  --info-bg: #dbeafe;
+
+  /* Backgrounds & Superfícies */
+  --body-bg: #f3f4f6;             /* Cinza muito suave (Cool Gray) */
   --card-bg: #ffffff;
-  --text-color: #333;
-  --text-muted: #6c757d;
+  --navbar-bg: #111827;           /* Quase preto (Midnight) */
+
+  /* Tipografia */
+  --text-main: #1f2937;           /* Cinza chumbo (nunca use preto #000) */
+  --text-muted: #6b7280;          /* Cinza médio */
+  --text-light: #9ca3af;
+  
+  /* Sombras (O segredo do design moderno) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* --- Reset e Base --- */
+/* =========================================
+   2. RESET E BASE
+   ========================================= */
 body {
   background-color: var(--body-bg);
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  color: var(--text-color);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif; /* Recomendado: Importar fonte 'Inter' */
+  -webkit-font-smoothing: antialiased; /* Deixa a fonte mais nítida no Mac/iPhone */
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
   margin: 0;
   padding: 0;
-  /* REMOVIDO: display: flex (quebrava o dashboard) */
 }
 
-/* --- Layout de Autenticação (Login/Signup) --- */
-/* Usamos esta classe para centralizar APENAS as telas de login */
+h1, h2, h3, h4, h5, h6 {
+  color: #111827;
+  font-weight: 700;
+  letter-spacing: -0.025em; /* Títulos mais "apertadinhos" ficam mais modernos */
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-color);
+  transition: color 0.2s;
+}
+
+/* Scrollbar personalizada (Chrome/Edge/Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
+
+/* =========================================
+   3. COMPONENTES GERAIS
+   ========================================= */
+
+/* Navbar Profissional */
+.navbar {
+  background-color: var(--navbar-bg) !important;
+  box-shadow: var(--shadow-md);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.navbar-brand {
+  color: #fff !important;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-size: 1.25rem;
+}
+
+/* Auth Wrapper (Login) */
 .auth-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #e9ecef;
-}
-
-.account {
-  width: 100%;
-  max-width: 400px;
-  padding: 15px;
-  margin: auto;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
 }
 
 .form-signin {
   background: #fff;
-  padding: 2.5rem;
-  border-radius: 1rem; /* Bordas mais arredondadas */
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  padding: 3rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(0,0,0,0.02);
 }
 
-/* --- Componentes do Dashboard --- */
-
-/* Navbar */
-.navbar {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(to right, #343a40, #212529) !important;
-}
-
-.navbar-brand {
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  font-size: 1.2rem;
-}
-
-/* Cartões (Produtos e Pedidos) */
-.card {
-  border: none; /* Remove a borda padrão feia */
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
-  background-color: var(--card-bg);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden;
-}
-
-/* Efeito ao passar o mouse no cartão */
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  background-color: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  font-weight: 600;
-  padding: 1rem;
-}
-
-.card-body {
-  padding: 1.25rem;
-}
-
-.card-footer {
-  background-color: #f8f9fa;
-  border-top: 1px solid #f0f0f0;
-}
-
-/* Imagens nos cartões */
-.card-img-top {
-  border-bottom: 1px solid #f0f0f0;
-  background-color: #f8f9fa;
-}
-
-/* --- Badges e Botões --- */
-.badge {
-  padding: 0.5em 0.8em;
-  font-weight: 500;
-  border-radius: 0.5rem;
-}
-
+/* Botões Modernos */
 .btn {
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
   border-radius: 0.5rem;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  border: none;
+  letter-spacing: 0.01em;
 }
 
 .btn-primary {
   background-color: var(--primary-color);
-  box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(67, 97, 238, 0.3); /* Sombra colorida */
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.4);
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(67, 97, 238, 0.4);
 }
 
-/* Títulos de Página */
-h2 {
-  color: #2c3e50;
+.btn-outline-primary {
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  background: transparent;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Inputs de Formulário */
+.form-control {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  color: var(--text-main);
+  background-color: #fff;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15); /* Anel de foco bonito */
+  outline: none;
+}
+
+/* =========================================
+   4. DASHBOARD & CARDS (O DIFERENCIAL)
+   ========================================= */
+
+/* Cards "Físicos" */
+.dashboard-card, .card {
+  background: var(--card-bg);
+  border: 1px solid rgba(0,0,0,0.04); /* Borda ultra sutil */
+  border-radius: 1rem; /* 16px */
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Animação suave */
+  overflow: hidden;
+}
+
+/* Efeito de levitação premium */
+.dashboard-card:hover, .card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(67, 97, 238, 0.1);
+}
+
+.card-header {
+  background: #fff;
+  border-bottom: 1px solid #f3f4f6;
+  padding: 1.5rem;
   font-weight: 700;
-  margin-bottom: 0;
+  color: var(--text-main);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Icon Box (Quadrados coloridos) */
+.icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.icon-box-primary { background: #eff6ff; color: var(--primary-color); }
+.icon-box-success { background: var(--success-bg); color: var(--success-color); }
+.icon-box-warning { background: var(--warning-bg); color: var(--warning-color); }
+
+/* =========================================
+   5. TABELAS DE DADOS (DATA TABLES)
+   ========================================= */
+
+.table-responsive {
+  border-radius: 0 0 1rem 1rem;
+}
+
+.table-modern {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.table-modern thead th {
+  background-color: #f9fafb; /* Cinza muito claro */
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table-modern tbody td {
+  padding: 1rem 1.5rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f3f4f6;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.table-modern tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table-modern tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* Badges / Pills (Estilo SaaS) */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px; /* Pill shape */
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+/* Adiciona uma bolinha antes do texto do status */
+.status-pill::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background-color: currentColor;
+  opacity: 0.6;
+}
+
+.status-pill.success { background-color: var(--success-bg); color: var(--success-color); }
+.status-pill.warning { background-color: var(--warning-bg); color: var(--warning-color); }
+.status-pill.danger { background-color: var(--danger-bg); color: var(--danger-color); }
+.status-pill.secondary { background-color: #f3f4f6; color: #4b5563; }
+
+/* Input de Data Customizado */
+.input-month-modern {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: var(--text-main);
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.input-month-modern:hover {
+  border-color: var(--primary-color);
 }
